@@ -26,10 +26,11 @@ import com.example.japanesecharacterquiz.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 
 @Composable
-    fun Greeting(viewModel: viewmodel_user = viewModel(),
+    fun Greeting(viewModel: viewmodel_user = hiltViewModel(),
                  onNavigateToSelection: () -> Unit = {}) {
     // Look for event from checkuser() in viewmodel
     LaunchedEffect(Unit) {

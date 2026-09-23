@@ -19,5 +19,8 @@ interface user_dao {
     @Query("SELECT * FROM User_Table WHERE username = :name")
     fun get_user(name: String): List<user>
 
+    @Query("DELETE FROM User_Table WHERE username = :name")
+    fun deleteUser(name: String)
+
 
 }

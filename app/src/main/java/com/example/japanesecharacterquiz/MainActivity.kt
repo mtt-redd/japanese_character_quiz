@@ -8,7 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import com.example.japanesecharacterquiz.ui.theme.JapaneseCharacterQuizTheme
 import com.example.japanesecharacterquiz.View.Greeting
 import com.example.japanesecharacterquiz.View.MainNavigation
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -104,22 +104,6 @@ fun Question(onNavigateToLogin: () -> Unit = {}) {
 
     }
 
-
-
-
-
-
-
-
-
-
-
 fun placeholder2(){
 
-}
-
-@Preview
-@Composable
-fun QuestionPreview() {
-    Question()
 }

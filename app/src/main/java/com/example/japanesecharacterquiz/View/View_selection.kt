@@ -29,16 +29,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.ButtonDefaults
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 
 @Composable
-fun Selection(viewModel: viewmodel_user = viewModel(), onNavigateToLogin: () -> Unit = {}) {
+fun Selection(viewModel: viewmodel_user = hiltViewModel(), onNavigateToLogin: () -> Unit = {}) {
 
     //context to load the database
     val context = LocalContext.current
     //get values from user_repository
-    // val username = viewModel.getusername()
-    // val score = viewModel.getscore()
+    val username = viewModel.getusername()
+     val score = viewModel.getscore()
     //get values from input
     var checked by remember { mutableStateOf(true) }
 
@@ -46,6 +47,7 @@ fun Selection(viewModel: viewmodel_user = viewModel(), onNavigateToLogin: () -> 
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
 
 Column(horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(26.dp),
     modifier = Modifier.background(Color(255, 190,
         190, 255))
         .fillMaxSize()
@@ -56,13 +58,13 @@ modifier = Modifier.background(Color(255, 139, 139, 255))
     .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(30.dp)
     ) {
-        Text("Hello ", textAlign = TextAlign.Left)
-        Text("Score : ", textAlign = TextAlign.Right)
+        Text("Hello $username!", textAlign = TextAlign.Left)
+        Text("Score : $score", textAlign = TextAlign.Right)
     }
 
 Button(onClick ={ placeholder()}, ) {Text("START!") }
 
-    Column(){
+    Column(modifier = Modifier.padding(top = 26.dp)){
 
         Box(modifier = Modifier.border(1.dp, Color.Black,
             RectangleShape)) {
@@ -117,18 +119,19 @@ Button(onClick ={ placeholder()}, ) {Text("START!") }
     Button(colors = ButtonDefaults.outlinedButtonColors
         (containerColor = Color.Red),
         onClick ={ onNavigateToLogin()}, ) {Text("Log Out") }
+
+    Button(colors = ButtonDefaults.outlinedButtonColors
+        (containerColor = Color.Red),
+        onClick ={ viewModel.deleteuser()
+            onNavigateToLogin()}, ) {Text("Delete account") }
+
     }
 
+
+
 }
 
 
-
-
-@Preview
-@Composable
-fun SelectionPreview() {
-    Selection()
-}
 
 fun placeholder(){
 
