@@ -2,26 +2,27 @@ package com.example.japanesecharacterquiz.View_Model
 
 import com.example.japanesecharacterquiz.Database.user
 import com.example.japanesecharacterquiz.Database.user_database
-import android.content.Context
 import android.util.Log
-import androidx.room3.Room
-import androidx.sqlite.driver.AndroidSQLiteDriver
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room3.RoomDatabase
 import com.example.japanesecharacterquiz.Database.user_repository
 import kotlinx.coroutines.launch
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import android.app.Application
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
 
-class viewmodel_login (application: Application)  : AndroidViewModel(application) {
+class viewmodel_user (application: Application)  : AndroidViewModel(application) {
 
     private val _navigationEvent = Channel<Unit>()
     val navigationEvent = _navigationEvent.receiveAsFlow()
+
+
+    val db = user_database.getDatabase(application)
+    val userRep = user_repository(db.user())
+
+    var username = ""
+
 
     //check if a user exists or create a new user.
     fun checkuser(name : String){
@@ -29,8 +30,7 @@ class viewmodel_login (application: Application)  : AndroidViewModel(application
         Log.d("", name)
 
 
-        val db = user_database.getDatabase(application)
-        val userRep = user_repository(db.user())
+
         viewModelScope.launch {
 
             val userList = userRep.getUser(name)
@@ -56,7 +56,7 @@ class viewmodel_login (application: Application)  : AndroidViewModel(application
         }
         else {Log.d("", "User Found!")
             // add user to repository values
-            userRep.setuser(userList)
+            setname(userList.first().username)
             Log.d("", "User has been set")
             _navigationEvent.send(Unit)
 
@@ -75,12 +75,34 @@ class viewmodel_login (application: Application)  : AndroidViewModel(application
 
         //after adding user to database, the data is saved in the repository
         val userList: List<user> = userRep.getUser(name)
-        userRep.setuser(userList)
+         setname(userList.first().username)
             Log.d("", "User has been set")
             _navigationEvent.send(Unit)
         }
 
     }
 
+    fun setname(name : String){
+        username = name
+    }
 
+    fun getusername() : String{
+/*
+    var userlist = userRep.getUser(username)
+
+        return userlist.first().username */
+
+        return "Test"
+    }
+
+    fun getscore() : Int{
+
+/*
+        var userlist = userRep.getUser(username)
+
+        return userlist.first().score */
+        return -1
+    }
 }
+
+

@@ -1,16 +1,23 @@
 package com.example.japanesecharacterquiz.Database
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
-//Reposotary is used to save date between sections
+//Reposotary is used to save data between functions / viewmodels
 
 class user_repository (private val userDao: user_dao) {
 
     //save the user details so they can be reused
-    public var username :List<user> = emptyList()
+    public var user :List<user> = emptyList()
 
     //Insert user into the database
     suspend fun insertUser (user: user) {
@@ -18,7 +25,7 @@ class user_repository (private val userDao: user_dao) {
             userDao.insert(user)
         }
     }
-//Retrive user from the Dao
+//Retrieve user from the Dao
     suspend fun getUser(name: String) : List<user> {
 
         return withContext(Dispatchers.IO) {
@@ -29,27 +36,25 @@ class user_repository (private val userDao: user_dao) {
     }
 
     //set the user
-   fun setuser(userlist : List<user>){
+   /* fun setuser(userlist : List<user>){
 
         Log.d("Reposotary", "Setting user")
-        username = userlist
-        Log.d("Reposotary", username.first().username)
-        Log.d("", username.toString())
+        user = userlist
+        Log.d("Repository added", user.first().username)
     }
 
     fun getusername(): String{
-        Log.d("", username.toString())
-        if (!username.isEmpty()){
+        if (!user.isEmpty()){
             Log.d("Repository", "Retrieving user")
-        return username.first().username}
+        return user.first().username}
         else {Log.d("Repository", "No user found")
             return ""
             }
     }
 
     fun getscore(): Int{
-        if (!username.isEmpty()){
-        return username.first().score}
+        if (!user.isEmpty()){
+        return user.first().score}
         else{return -1}
-    }
+    } */
 }

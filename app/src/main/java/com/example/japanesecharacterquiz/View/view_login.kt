@@ -1,6 +1,6 @@
 package com.example.japanesecharacterquiz.View
 
-import com.example.japanesecharacterquiz.View_Model.viewmodel_login
+import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,21 +20,16 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.japanesecharacterquiz.R
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 
 
 @Composable
-    fun Greeting(viewModel: viewmodel_login = viewModel(),
+    fun Greeting(viewModel: viewmodel_user = viewModel(),
                  onNavigateToSelection: () -> Unit = {}) {
     // Look for event from checkuser() in viewmodel
     LaunchedEffect(Unit) {
