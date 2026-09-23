@@ -16,36 +16,42 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Singleton
 import com.example.japanesecharacterquiz.Database.question
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class viewModel_question @Inject constructor(private val questionRep: questionRepository)
     : ViewModel() {
 
+    suspend fun setquestion(id: Int){
+
+
+            val questionList = questionRep.retriveQuestion(id)
+            Log.d("Checking if repository is ready", "If")
+
+            if (!questionList.isEmpty()) {
+
+                Log.d("Viewmodel1", questionList.first().Kanji)
+                questionRep.setquestion(questionList)
+            }
+            else {
+            Log.d("Viewmodel 2", "List is empty")}
+
+
+
+    }
 
 //retrive the question's Kanji based on an id
-        fun retrivequestion(id : Int) : String{
+      suspend fun retrivequestion() : String {
 
-            var questions = ""
-            viewModelScope.launch {
-            var question = questionRep.retriveQuestion(id)
-                 questions = question.first().Kanji
-
-            }
-            return questions
+        return questionRep.retriveQuestionValues()
         }
+
 
     //retrive the question's answers based on an id
-    fun retriveanswers(id : Int) : List<String>{
+   suspend fun retriveanswers() : List<String>{
 
-        var answers = listOf("", "", "", "")
-        viewModelScope.launch {
-            var question = questionRep.retriveQuestion(id)
-            answers = listOf<String>(question.first().answer1,
-                question.first().answer2,
-                question.first().answer3,
-                question.first().answer4)
-        }
-        return answers
+        return questionRep.retriveAnswerValues()
     }
 
     }

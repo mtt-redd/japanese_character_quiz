@@ -1,5 +1,6 @@
 package com.example.japanesecharacterquiz.View
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
@@ -37,8 +39,19 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
     val username = userviewModel.getusername()
     val score = userviewModel.getscore()
 
-    val answers = questionviewModel.retriveanswers(1)
-    val question = questionviewModel.retrivequestion(1)
+    //questionviewModel.setquestion(1)
+
+   var answers = listOf<String>("loading", "loading", "loading", "loading")
+    var question = "loading"
+
+    LaunchedEffect(Unit) {
+
+        questionviewModel.setquestion(1)
+        answers = questionviewModel.retriveanswers()
+        question = questionviewModel.retrivequestion()
+        Log.d("View_Couritine", answers.toString() )
+    }
+    Log.d("View", answers.toString())
 
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(answers[0]) }
 
