@@ -33,7 +33,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 
 @Composable
-fun Selection(viewModel: viewmodel_user = hiltViewModel(), onNavigateToLogin: () -> Unit = {}) {
+fun Selection(viewModel: viewmodel_user = hiltViewModel(),
+              onNavigateToLogin: () -> Unit = {},
+              onNavigateToQuiz: () -> Unit = {},
+              ) {
 
     //context to load the database
     val context = LocalContext.current
@@ -62,7 +65,7 @@ modifier = Modifier.background(Color(255, 139, 139, 255))
         Text("Score : $score", textAlign = TextAlign.Right)
     }
 
-Button(onClick ={ placeholder()}, ) {Text("START!") }
+Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
 
     Column(modifier = Modifier.padding(top = 26.dp)){
 

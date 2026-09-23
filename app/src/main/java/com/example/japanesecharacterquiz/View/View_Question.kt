@@ -31,12 +31,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.japanesecharacterquiz.View_Model.viewModel_question
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 
 @Composable
-fun Question(onNavigateToLogin: () -> Unit = {}) {
+fun Question(userviewModel: viewmodel_user = hiltViewModel(),
+             questionviewModel: viewModel_question = hiltViewModel(),
+             onNavigateToSelection: () -> Unit = {}) {
 
-    val radioOptions = listOf("Japan", "Kanji", "Book" , "SunTree")
+    //get values from user_repository
+    val username = userviewModel.getusername()
+    val score = userviewModel.getscore()
+
+    val radioOptions = listOf("Japan", "Kanji", "Book" , "Sun Tree")
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,8 +59,8 @@ fun Question(onNavigateToLogin: () -> Unit = {}) {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(30.dp)
         ) {
-            Text("Hello ", textAlign = TextAlign.Left)
-            Text("Score : ", textAlign = TextAlign.Right)
+            Text("Hello $username! ", textAlign = TextAlign.Left)
+            Text("Score : $score ", textAlign = TextAlign.Right)
         }
 
         Box(modifier = Modifier.padding(top = 46.dp)
@@ -60,7 +68,7 @@ fun Question(onNavigateToLogin: () -> Unit = {}) {
             (Color(255, 255, 255, 255))
             .border(5.dp, Color.Black,
                 RectangleShape)) {
-            Text("日本", fontSize = 180.sp)
+            Text("日本", fontSize = 80.sp)
         }
 
         Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
@@ -98,7 +106,7 @@ fun Question(onNavigateToLogin: () -> Unit = {}) {
 
         Button(colors = ButtonDefaults.outlinedButtonColors
             (containerColor = Color.Red,),
-            onClick ={ onNavigateToLogin()}, ) {Text("Exit the Quiz") }
+            onClick ={ onNavigateToSelection()}, ) {Text("Exit the Quiz") }
     }
 
 

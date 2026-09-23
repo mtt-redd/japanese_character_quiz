@@ -15,18 +15,37 @@ fun MainNavigation() {
     ) {
         composable("login") {
             Greeting(onNavigateToSelection = {
-                navController.navigate("selection"){
-                    //blocking back after the login
-                popUpTo("login") { inclusive = true }}
+                navController.navigate("selection") {
+                    popUpTo("login") { inclusive = true }
+                }
             })
         }
 
+        // Combine both callbacks into a single "selection" destination
         composable("selection") {
-            Selection(onNavigateToLogin = {
-                navController.navigate("login"){
-                    //blocking back after the login
-                    popUpTo("selection") { inclusive = true }}
-            })
+            Selection(
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("selection") { inclusive = true }
+                    }
+                },
+                onNavigateToQuiz = {
+                    navController.navigate("quiz") {
+                        popUpTo("selection") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Add the missing "quiz" route destination
+        composable("quiz") {
+            Question(
+                onNavigateToSelection = {
+                    navController.navigate("selection") {
+                        popUpTo("quiz") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
