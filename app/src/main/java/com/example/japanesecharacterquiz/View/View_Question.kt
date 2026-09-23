@@ -12,24 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
@@ -44,8 +37,10 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
     val username = userviewModel.getusername()
     val score = userviewModel.getscore()
 
-    val radioOptions = listOf("Japan", "Kanji", "Book" , "Sun Tree")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    val answers = questionviewModel.retriveanswers(1)
+    val question = questionviewModel.retrivequestion(1)
+
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(answers[0]) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(Color(255, 190,
@@ -68,12 +63,12 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
             (Color(255, 255, 255, 255))
             .border(5.dp, Color.Black,
                 RectangleShape)) {
-            Text("日本", fontSize = 80.sp)
+            Text(question, fontSize = 80.sp)
         }
 
         Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
             Text(text = "Select a difficulty")
-            radioOptions.forEach { text ->
+            answers.forEach { text ->
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -88,7 +83,7 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RadioButton(
-                        selected = (text == selectedOption ),
+                        selected = (text == selectedOption),
                         onClick = null,
                         modifier = Modifier.padding(20.dp),
 
@@ -99,7 +94,8 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
                         modifier = Modifier.padding(start = 16.dp),
                     )
 
-                }}
+                }
+            }
 
 
         }
