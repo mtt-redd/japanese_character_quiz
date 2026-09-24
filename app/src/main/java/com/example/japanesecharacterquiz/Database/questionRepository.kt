@@ -18,45 +18,9 @@ import kotlin.collections.first
 @Singleton
 class questionRepository @Inject constructor(private val questionDao: questionDao) {
 
-    //save the user details so they can be reused
-    public var question :List<question> = emptyList()
-
-    suspend fun insertQuestion (question: question) {
-        withContext(Dispatchers.IO) {
-            questionDao.insert(question)
-        }
+    fun getQuestions(diff : Int): Flow<List<question>>{
+        return questionDao.retriveQuestion(diff)
     }
 
-    suspend fun retriveQuestion(id : Int) : List<question>{
-        return withContext(Dispatchers.IO){
-            questionDao.retriveQuestion(id)
-        }
-    }
-
-    suspend fun maximumQuestionNumber(){
-        withContext(Dispatchers.IO){
-            questionDao.maxnumber()
-        }
-    }
-
-     fun setquestion(questionList : List<question>){
-
-        Log.d("Reposotary1", "Setting question")
-        question = questionList
-        Log.d("Reposotary2", question.first().Kanji)
-    }
-
-    fun retriveAnswerValues() : List<String>{
-
-        return listOf(question.first().answer1,
-            question.first().answer2,
-            question.first().answer3,
-            question.first().answer4,)
-    }
-
-    fun retriveQuestionValues(): String{
-
-        return question.first().Kanji
-    }
 
 }

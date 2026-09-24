@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.mutableStateOf
@@ -24,11 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
+import kotlin.random.Random
 
 @Composable
 fun Question(userviewModel: viewmodel_user = hiltViewModel(),
@@ -39,21 +45,30 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
     val username = userviewModel.getusername()
     val score = userviewModel.getscore()
 
-    //questionviewModel.setquestion(1)
 
-   var answers = listOf<String>("loading", "loading", "loading", "loading")
-    var question = "loading"
 
-    LaunchedEffect(Unit) {
+    val question by questionviewModel.questions.collectAsStateWithLifecycle()
 
-        questionviewModel.setquestion(1)
-        answers = questionviewModel.retriveanswers()
-        question = questionviewModel.retrivequestion()
-        Log.d("View_Couritine", answers.toString() )
+    // 2. Safely check if the flow has emitted data yet
+    if (question.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
     }
-    Log.d("View", answers.toString())
+    val randomInd = Random.nextInt(question.size);
+    Log.d("Random Size", question.size.toString())
+    val currentQuestion = question[randomInd]
 
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(answers[0]) }
+    val kanji = currentQuestion.Kanji
+
+    val answers = listOf(
+        currentQuestion.answer1,
+        currentQuestion.answer2,
+        currentQuestion.answer3,
+        currentQuestion.answer4
+    )
+    val (selectedOption, onOptionSelected) = remember(currentQuestion) { mutableStateOf(answers[0]) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(Color(255, 190,
@@ -76,11 +91,12 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
             (Color(255, 255, 255, 255))
             .border(5.dp, Color.Black,
                 RectangleShape)) {
-            Text(question, fontSize = 80.sp)
-        }
+                    Text(text = kanji, fontSize = 80.sp)
+                }
+
 
         Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
-            Text(text = "Select a difficulty")
+            Text(text = "Choose the correct answer:")
             answers.forEach { text ->
                 Row(
                     Modifier

@@ -36,19 +36,23 @@ class user_repository @Inject constructor(private val userDao: user_dao) {
 //Retrieve user from the Dao
     suspend fun getUser(name: String) : List<user> {
 
+        Log.d("Repository", "Getting User")
+
         return withContext(Dispatchers.IO) {
             userDao.get_user(name)
         }
 
+    Log.d("Repository", "user got")
 
-    }
+
+}
 
     //set the user
     fun setuser(userlist : List<user>){
 
         Log.d("Reposotary", "Setting user")
         user = userlist
-        Log.d("Repository added", user.first().username)
+        Log.d("Repository user added", user.first().username)
     }
 
     fun getusername(): String{
