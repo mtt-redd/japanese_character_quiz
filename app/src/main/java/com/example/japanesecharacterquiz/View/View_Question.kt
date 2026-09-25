@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,10 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.wear.compose.material3.ConfirmationDialog
 import com.example.japanesecharacterquiz.Database.question
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 import kotlin.random.Random
+
+//Simple variable to change the point.
+// TODO: Might be used to give different weight to different questions
+val pointReward = 50
+
 
 @Composable
 fun Question(userviewModel: viewmodel_user = hiltViewModel(),
@@ -58,6 +66,8 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
     val kanji = currentQuestion.Kanji
 
 
+
+
     var answers = listOf(
         currentQuestion.answer1,
         currentQuestion.answer2,
@@ -74,8 +84,15 @@ Log.d("", "Enable Hira")
             currentQuestion.answer4Hiragana,)
 
     }
-    val (selectedOption, onOptionSelected) = remember(currentQuestion) { mutableStateOf(answers[0]) }
-    var selectedIndex by remember { mutableIntStateOf(-1) }
+    val (selectedOption, onOptionSelected) =
+        remember(currentQuestion)
+        { mutableStateOf(answers[0]) }
+
+    val showDialog by questionviewModel.showDialog
+        .collectAsStateWithLifecycle()
+
+    val showWrongDialog by questionviewModel.showWrongDialog
+        .collectAsStateWithLifecycle()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(Color(255, 190,
@@ -104,7 +121,7 @@ Log.d("", "Enable Hira")
 
         Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
             Text(text = "Choose the correct answer:")
-            answers.forEach { text ->
+            answers.forEachIndexed { index, text ->
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -112,7 +129,8 @@ Log.d("", "Enable Hira")
                             (Color(255, 139, 139, 255))
                         .selectable(
                             selected = (text == selectedOption),
-                            onClick = { onOptionSelected(text) }
+                            onClick = { onOptionSelected(text)
+                            questionviewModel.setSelectedAnswer(index)}
                         )
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -137,13 +155,65 @@ Log.d("", "Enable Hira")
         }
 
         Button(colors = ButtonDefaults.outlinedButtonColors
+            (containerColor = Color.Blue,),
+            onClick ={ questionviewModel.verifyanswer()}, ) {Text("Submit!") }
+
+
+    Button(colors = ButtonDefaults.outlinedButtonColors
             (containerColor = Color.Red,),
             onClick ={ onNavigateToSelection()}, ) {Text("Exit the Quiz") }
     }
 
+    if (showDialog) {
+        ConfirmationDialog(
+            onDismiss = { questionviewModel.onDialogDismissed()
+            userviewModel.updatescore(pointReward)}
+        )
+    }
+
+    if (showWrongDialog){
+        WrongDialog(
+            onWrongDismiss = {
+                questionviewModel.onWrongDialogDismissed()
+            },
+            explanation = currentQuestion.wrong
+        )
+    }
+
 
     }
 
-fun placeholder2(){
-
+@Composable
+fun ConfirmationDialog(
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, // Handles back button or outside touch clicks
+        title = { Text(text = "You got it right!") },
+        text = { Text(text = "Congratulation, $pointReward+ points") },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Ok")
+            }
+        }
+    )
 }
+
+@Composable
+fun WrongDialog(
+    onWrongDismiss: () -> Unit,
+    explanation : String
+) {
+    AlertDialog(
+        onDismissRequest = onWrongDismiss, // Handles back button or outside touch clicks
+        title = { Text(text = "You got it wrong.") },
+        text = { Text(text = explanation) },
+        confirmButton = {
+            TextButton(onClick = onWrongDismiss) {
+                Text("Ok")
+            }
+        }
+    )
+}
+
+

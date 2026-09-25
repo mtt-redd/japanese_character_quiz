@@ -25,6 +25,8 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
     private val _navigationEvent = Channel<Unit>()
     val navigationEvent = _navigationEvent.receiveAsFlow()
 
+    val pointReward = 50
+
 
     var username = ""
 
@@ -108,6 +110,11 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
         viewModelScope.launch {
         userRep.deleteUser()}
         Log.d("viewModel", "Deleting user :(")
+    }
+
+    fun updatescore(pointReward : Int){
+        viewModelScope.launch {
+        userRep.updateScore(pointReward)}
     }
 }
 

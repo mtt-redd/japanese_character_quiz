@@ -69,4 +69,10 @@ class user_repository @Inject constructor(private val userDao: user_dao) {
         return user.first().score}
         else{return -1}
     }
+    suspend fun updateScore(pointAward: Int){
+
+Log.d("User Repository", "Change Score")
+        userDao.updateScore(getscore() + pointAward, getusername())
+
+    }
 }

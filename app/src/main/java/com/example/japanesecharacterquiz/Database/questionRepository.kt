@@ -21,6 +21,8 @@ class questionRepository @Inject constructor(private val questionDao: questionDa
     var useHira = false
     var questiondifficulty = 1
 
+    var selectAnswer = 1
+
     fun getQuestions(diff : Int): Flow<List<question>>{
         return questionDao.retriveQuestion(diff)
     }
@@ -52,6 +54,12 @@ class questionRepository @Inject constructor(private val questionDao: questionDa
 
         Log.d("Repository", questiondifficulty.toString())
         return questiondifficulty
+
+    }
+
+    fun setSelectedAnswer(select : Int){
+
+        selectAnswer = select + 1 //to compensate for index
 
     }
 

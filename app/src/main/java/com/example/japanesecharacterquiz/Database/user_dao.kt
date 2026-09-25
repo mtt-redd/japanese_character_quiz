@@ -22,5 +22,10 @@ interface user_dao {
     @Query("DELETE FROM User_Table WHERE username = :name")
     fun deleteUser(name: String)
 
+    @Query("UPDATE User_Table SET score = :newScore WHERE username = :name")
+    suspend fun updateScore(newScore: Int, name: String)
+
+
+
 
 }
