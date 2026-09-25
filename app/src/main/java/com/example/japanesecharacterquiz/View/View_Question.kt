@@ -29,9 +29,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.japanesecharacterquiz.Database.question
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 import kotlin.random.Random
@@ -47,28 +50,32 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
 
 
 
-    val question by questionviewModel.questions.collectAsStateWithLifecycle()
+    val questions by questionviewModel.questions.collectAsStateWithLifecycle()
 
-    // 2. Safely check if the flow has emitted data yet
-    if (question.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-    val randomInd = Random.nextInt(question.size);
-    Log.d("Random Size", question.size.toString())
-    val currentQuestion = question[randomInd]
+
+    val currentQuestion = questions
 
     val kanji = currentQuestion.Kanji
 
-    val answers = listOf(
+
+    var answers = listOf(
         currentQuestion.answer1,
         currentQuestion.answer2,
         currentQuestion.answer3,
         currentQuestion.answer4
     )
+
+if (questionviewModel.getHira() == true){
+Log.d("", "Enable Hira")
+        answers = listOf(
+            currentQuestion.answer1Hiragana,
+            currentQuestion.answer2Hiragana,
+            currentQuestion.answer3Hiragana,
+            currentQuestion.answer4Hiragana,)
+
+    }
     val (selectedOption, onOptionSelected) = remember(currentQuestion) { mutableStateOf(answers[0]) }
+    var selectedIndex by remember { mutableIntStateOf(-1) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(Color(255, 190,

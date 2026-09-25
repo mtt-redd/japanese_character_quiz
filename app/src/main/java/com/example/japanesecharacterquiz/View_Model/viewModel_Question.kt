@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -27,16 +28,53 @@ import kotlin.time.Duration.Companion.milliseconds
 class viewModel_question @Inject constructor(private val questionRep: questionRepository)
     : ViewModel() {
 
+//Kotlin doesn't allow null values. So this is a default answer is case
+        //something goes wrong
 
 
-    val questions: StateFlow<List<question>> = questionRep.getQuestions(1)
+val defaultquestion = question(0, "Loading",
+    "Loading","Loading", "Loading",
+    "Loading", "Loading", "Loading",
+    "Loading", "Loading", 1, "Loading",
+    "Loading", 1)
+
+    val questions: StateFlow<question> = questionRep.getQuestions(getDifficulty()).map { questions ->
+        questions.random() //sends a random question instead of a specific one
+    }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // Keeps flow active for 5s after UI unbinds (handles config changes)
-            initialValue = emptyList()
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = defaultquestion
         )
 
+    fun enableHira(){
+            questionRep.enableHira()
+            Log.d("Viewpoint", "Enable Hira")
+        }
+    fun disableHira(){
+        questionRep.disableHira()
+    }
+
+    fun setdifficulty(diff: String){
+
+
+        questionRep.setdifficulty(diff)
+    }
+
+    fun getHira() : Boolean{
+
+        return questionRep.getHira()
+    }
+
+    fun getDifficulty() : Int{
+
+        return questionRep.getDifficulty()
+
+    }
+
 }
+
+
 
 
 

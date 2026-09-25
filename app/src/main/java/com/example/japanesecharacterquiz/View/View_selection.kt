@@ -30,10 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.ButtonDefaults
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.japanesecharacterquiz.View_Model.viewModel_question
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
 
 @Composable
 fun Selection(viewModel: viewmodel_user = hiltViewModel(),
+              questionviewModel: viewModel_question = hiltViewModel(),
               onNavigateToLogin: () -> Unit = {},
               onNavigateToQuiz: () -> Unit = {},
               ) {
@@ -74,7 +76,7 @@ Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
             Row(Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(30.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Text("Answer in Hiragana?")
+                Text("Answers in Hiragana?")
                 Switch(
                     checked = checked,
                     onCheckedChange = {
@@ -114,9 +116,16 @@ Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
                 )
 
             }}
-
+questionviewModel.setdifficulty(selectedOption)
 
         }
+
+    if (checked == true){
+        questionviewModel.enableHira()
+    }
+    else {questionviewModel.disableHira()}
+
+
 
 
     Button(colors = ButtonDefaults.outlinedButtonColors

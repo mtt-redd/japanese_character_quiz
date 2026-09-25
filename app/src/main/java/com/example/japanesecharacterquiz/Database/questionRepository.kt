@@ -18,8 +18,41 @@ import kotlin.collections.first
 @Singleton
 class questionRepository @Inject constructor(private val questionDao: questionDao) {
 
+    var useHira = false
+    var questiondifficulty = 1
+
     fun getQuestions(diff : Int): Flow<List<question>>{
         return questionDao.retriveQuestion(diff)
+    }
+
+    fun enableHira(){
+        useHira = true
+        Log.d("Repository", "Enable Hira")
+    }
+    fun disableHira(){
+        useHira = false
+    }
+
+    fun setdifficulty(diff: String){
+
+        when (diff) {
+            "Easy" -> questiondifficulty = 1
+            "Normal" -> questiondifficulty = 2
+            "Hard" -> questiondifficulty = 3
+            else -> questiondifficulty = 1
+        }
+    }
+
+    fun getHira() : Boolean{
+
+        return useHira
+    }
+
+    fun getDifficulty() : Int{
+
+        Log.d("Repository", questiondifficulty.toString())
+        return questiondifficulty
+
     }
 
 
