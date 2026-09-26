@@ -192,6 +192,7 @@ Log.d("", "Enable Hira")
         WrongDialog(
             onWrongDismiss = {
                 questionviewModel.onWrongDialogDismissed()
+                questionviewModel.loadNewQuestion()
             },
             explanation = questions.wrong
         )
