@@ -35,8 +35,12 @@ class viewModel_question @Inject constructor(private val questionRep: questionRe
 
     private val _showDialog = MutableStateFlow(false)
     private val _showWrongDialog = MutableStateFlow(false)
+
+    private val _showHintDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
     val showWrongDialog: StateFlow<Boolean> = _showWrongDialog.asStateFlow()
+    val showHintDialog: StateFlow<Boolean> = _showHintDialog.asStateFlow()
+
 
 
 
@@ -48,7 +52,7 @@ val defaultquestion = question(0, "Loading",
     "Loading", "Loading", 1, "Loading",
     "Loading", 1)
 
-    val questions: StateFlow<question> = questionRep.
+    var questions: StateFlow<question> = questionRep.
     getQuestions(getDifficulty()).map { questions ->
         questions.random() //sends a random question instead of a specific one
     }
@@ -98,10 +102,12 @@ val defaultquestion = question(0, "Loading",
 
         val getcorrectanswer = questions.value.correctanswer
 
-        Log.d("", questionRep.selectAnswer.toString())
-        Log.d("", questionRep.selectAnswer.toString())
+        Log.d("Viewmodel", questionRep.selectAnswer.toString())
+        Log.d("Viewmodel", getcorrectanswer.toString())
 
         if (questionRep.selectAnswer == getcorrectanswer) {
+
+            setSelectedAnswer(0)
 
             Log.d("Viewmodel", "You got it right!")
 
@@ -109,7 +115,8 @@ val defaultquestion = question(0, "Loading",
 
         }
         else {
-            Log.d("", questions.value.wrong)
+            setSelectedAnswer(0)
+            Log.d("Viewmodel", questions.value.wrong)
             openWrongDialog()
         }
 
@@ -131,9 +138,17 @@ val defaultquestion = question(0, "Loading",
         _showWrongDialog.value = false
     }
 
+    fun openHintDialog() {
+        _showHintDialog.value = true
+    }
+
+    fun onHintDialogDismissed() {
+        _showHintDialog.value = false
+    }
+
     fun loadNewQuestion(){
 
-        val questions: StateFlow<question> = questionRep.
+         questions = questionRep.
         getQuestions(getDifficulty()).map { questions ->
             questions.random() //sends a random question instead of a specific one
         }

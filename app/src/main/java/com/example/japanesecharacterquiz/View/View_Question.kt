@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,44 +55,48 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
 
     //get values from user_repository
     val username = userviewModel.getusername()
-    val score = userviewModel.getscore()
+
+    val score by userviewModel.score.collectAsStateWithLifecycle()
+
+
 
 
 
     val questions by questionviewModel.questions.collectAsStateWithLifecycle()
 
 
-    val currentQuestion = questions
-
-    val kanji = currentQuestion.Kanji
+    val kanji = questions.Kanji
 
 
 
 
     var answers = listOf(
-        currentQuestion.answer1,
-        currentQuestion.answer2,
-        currentQuestion.answer3,
-        currentQuestion.answer4
+        questions.answer1,
+        questions.answer2,
+        questions.answer3,
+        questions.answer4
     )
 
 if (questionviewModel.getHira() == true){
 Log.d("", "Enable Hira")
         answers = listOf(
-            currentQuestion.answer1Hiragana,
-            currentQuestion.answer2Hiragana,
-            currentQuestion.answer3Hiragana,
-            currentQuestion.answer4Hiragana,)
+            questions.answer1Hiragana,
+            questions.answer2Hiragana,
+            questions.answer3Hiragana,
+            questions.answer4Hiragana,)
 
     }
     val (selectedOption, onOptionSelected) =
-        remember(currentQuestion)
+        remember(questions)
         { mutableStateOf(answers[0]) }
 
     val showDialog by questionviewModel.showDialog
         .collectAsStateWithLifecycle()
 
     val showWrongDialog by questionviewModel.showWrongDialog
+        .collectAsStateWithLifecycle()
+
+    val showHintDialog by questionviewModel.showHintDialog
         .collectAsStateWithLifecycle()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,13 +109,23 @@ Log.d("", "Enable Hira")
             modifier = Modifier.background(Color(255, 139, 139, 255))
                 .border(1.dp, Color.Black, RectangleShape)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(30.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text("Hello $username! ", textAlign = TextAlign.Left)
             Text("Score : $score ", textAlign = TextAlign.Right)
         }
 
-        Box(modifier = Modifier.padding(top = 46.dp)
+        TextButton(
+            onClick = {questionviewModel.openHintDialog()},
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Color(0xFF0083FF),
+                containerColor = Color.Transparent       // Background color (transparent by default)
+            )
+        ) {
+            Text("Hint")
+        }
+
+        Box(modifier = Modifier.padding(top = 10.dp)
             .background
             (Color(255, 255, 255, 255))
             .border(5.dp, Color.Black,
@@ -119,7 +134,7 @@ Log.d("", "Enable Hira")
                 }
 
 
-        Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
+        Column (verticalArrangement = Arrangement.spacedBy(5.dp)){
             Text(text = "Choose the correct answer:")
             answers.forEachIndexed { index, text ->
                 Row(
@@ -167,7 +182,9 @@ Log.d("", "Enable Hira")
     if (showDialog) {
         ConfirmationDialog(
             onDismiss = { questionviewModel.onDialogDismissed()
-            userviewModel.updatescore(pointReward)}
+                questionviewModel.loadNewQuestion()
+            userviewModel.updatescore(pointReward, score)
+            Log.d("View","This is happening")}
         )
     }
 
@@ -176,7 +193,16 @@ Log.d("", "Enable Hira")
             onWrongDismiss = {
                 questionviewModel.onWrongDialogDismissed()
             },
-            explanation = currentQuestion.wrong
+            explanation = questions.wrong
+        )
+    }
+
+    if (showHintDialog){
+        HintDialog(
+            onHintDismiss = {
+                questionviewModel.onHintDialogDismissed()
+            },
+            hint = questions.hint
         )
     }
 
@@ -210,6 +236,23 @@ fun WrongDialog(
         text = { Text(text = explanation) },
         confirmButton = {
             TextButton(onClick = onWrongDismiss) {
+                Text("Ok")
+            }
+        }
+    )
+}
+
+@Composable
+fun HintDialog(
+    onHintDismiss: () -> Unit,
+    hint : String
+) {
+    AlertDialog(
+        onDismissRequest = onHintDismiss, // Handles back button or outside touch clicks
+        title = { Text(text = "Here is your hint:") },
+        text = { Text(text = hint) },
+        confirmButton = {
+            TextButton(onClick = onHintDismiss) {
                 Text("Ok")
             }
         }

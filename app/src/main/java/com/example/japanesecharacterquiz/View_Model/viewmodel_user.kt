@@ -9,10 +9,18 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.AndroidViewModel
 import android.app.Application
 import androidx.lifecycle.ViewModel
+import com.example.japanesecharacterquiz.Database.question
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Singleton
 
 @HiltViewModel
@@ -27,9 +35,18 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
 
     val pointReward = 50
 
-
     var username = ""
 
+    val score: StateFlow<Int> = userRep.getscore(userRep.getusername())
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // 5s timeout standard for Compose/Lifecycle
+            initialValue = 0
+        )
+
+    //Handles delete dialogue warning
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
 
     //check if a user exists or create a new user.
     fun checkuser(name: String) {
@@ -94,27 +111,42 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
 
 
     fun getusername(): String {
-
         return userRep.getusername()
 
     }
 
-    fun getscore(): Int {
 
-
-        return userRep.getscore()
-    }
 
     fun deleteuser(){
 
         viewModelScope.launch {
-        userRep.deleteUser()}
+        userRep.deleteUser()
+            _navigationEvent.send(Unit)}
         Log.d("viewModel", "Deleting user :(")
+
     }
 
-    fun updatescore(pointReward : Int){
+    fun updatescore(pointReward : Int, score : Int){
         viewModelScope.launch {
-        userRep.updateScore(pointReward)}
+        userRep.updateScore(pointReward, score)
+            Log.d("Corutine","This is happening")}
+        Log.d("Viewmodel","This is happening")
+    }
+
+    //Dialogue confirmation for deleting the account
+
+    fun onOpenDialogClicked() {
+        _showDialog.value = true
+    }
+
+    fun onDialogDismissed() {
+        _showDialog.value = false
+    }
+
+    fun onDialogConfirmed() {
+        // Perform confirmation logic here (e.g., save data, make network call)
+        _showDialog.value = false
+        deleteuser()
     }
 }
 

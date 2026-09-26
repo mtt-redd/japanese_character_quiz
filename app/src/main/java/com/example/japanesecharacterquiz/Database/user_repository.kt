@@ -64,15 +64,15 @@ class user_repository @Inject constructor(private val userDao: user_dao) {
             }
     }
 
-    fun getscore(): Int{
-        if (!user.isEmpty()){
-        return user.first().score}
-        else{return -1}
+    fun getscore(name : String): Flow<Int>{
+
+        return userDao.get_score(name)
     }
-    suspend fun updateScore(pointAward: Int){
+
+    suspend fun updateScore(pointAward: Int, score : Int){
 
 Log.d("User Repository", "Change Score")
-        userDao.updateScore(getscore() + pointAward, getusername())
-
+        userDao.updateScore(score + pointAward, getusername())
+        Log.d("Corutine","This is happening")
     }
 }

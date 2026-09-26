@@ -1,5 +1,6 @@
 package com.example.japanesecharacterquiz.View
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +31,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
 import com.example.japanesecharacterquiz.View_Model.viewmodel_user
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Composable
 fun Selection(viewModel: viewmodel_user = hiltViewModel(),
@@ -44,12 +52,22 @@ fun Selection(viewModel: viewmodel_user = hiltViewModel(),
     val context = LocalContext.current
     //get values from user_repository
     val username = viewModel.getusername()
-     val score = viewModel.getscore()
+    val score by viewModel.score.collectAsStateWithLifecycle()
     //get values from input
     var checked by remember { mutableStateOf(true) }
 
+    Log.d("", "Are you online?")
+
     val radioOptions = listOf("Easy", "Normal", "Hard")
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+
+    val showDialog by viewModel.showDialog.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect {
+            onNavigateToLogin()
+        }
+    }
 
 Column(horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(26.dp),
@@ -132,19 +150,51 @@ questionviewModel.setdifficulty(selectedOption)
         (containerColor = Color.Red),
         onClick ={ onNavigateToLogin()}, ) {Text("Log Out") }
 
-    Button(colors = ButtonDefaults.outlinedButtonColors
-        (containerColor = Color.Red),
-        onClick ={ viewModel.deleteuser()
-            onNavigateToLogin()}, ) {Text("Delete account") }
 
+    TextButton(
+        onClick = {viewModel.onOpenDialogClicked()},
+        colors = ButtonDefaults.textButtonColors(
+            contentColor = Color(0xFF0083FF),
+            containerColor = Color.Transparent       // Background color (transparent by default)
+        )
+    ) {
+        Text("Delete Account")
+    }
+
+    if (showDialog) {
+        DeleteDialog(
+            onDismiss = viewModel::onDialogDismissed,
+            onConfirm = viewModel::onDialogConfirmed,
+        )
     }
 
 
 
+    }
+
+
 }
 
-
-
-fun placeholder(){
-
+@Composable
+fun DeleteDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, // Handles back button or outside touch clicks
+        title = { Text(text = "Delete Account?") },
+        text = { Text(text = "Are you sure you want to proceed? " +
+                "This action cannot be reversed") },
+        confirmButton = {
+            TextButton(onClick = onConfirm ) {
+                Text("Yes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("No")
+            }
+        }
+    )
 }
+
