@@ -1,6 +1,8 @@
 package com.example.japanesecharacterquiz.View
 
+import android.content.pm.ActivityInfo
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +21,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -90,6 +95,9 @@ Log.d("", "Enable Hira")
         remember(questions)
         { mutableStateOf(answers[0]) }
 
+    val wrongcheck by questionviewModel.wrongcheck
+        .collectAsStateWithLifecycle()
+
     val showDialog by questionviewModel.showDialog
         .collectAsStateWithLifecycle()
 
@@ -99,10 +107,25 @@ Log.d("", "Enable Hira")
     val showHintDialog by questionviewModel.showHintDialog
         .collectAsStateWithLifecycle()
 
+    val configuration = LocalConfiguration.current
+    val context = LocalActivity.current
+
+    LaunchedEffect(configuration) {
+        val activity = context ?: return@LaunchedEffect
+        // Determine if screen is compact (phone-sized) in either width or height
+        val isCompact = configuration.screenWidthDp < 600 || configuration.screenHeightDp < 600
+        activity.requestedOrientation = if (isCompact) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_FULL_USER
+        }
+    }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(Color(255, 190,
             190, 255))
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(top = 26.dp)) {
 
         Row(
@@ -125,12 +148,18 @@ Log.d("", "Enable Hira")
             Text("Hint")
         }
 
+        if (wrongcheck) {
+            Text(
+                text = "You got this question wrong before!",
+                )
+        }
+
         Box(modifier = Modifier.padding(top = 10.dp)
             .background
             (Color(255, 255, 255, 255))
             .border(5.dp, Color.Black,
                 RectangleShape)) {
-                    Text(text = kanji, fontSize = 80.sp)
+                    Text(text = kanji, fontSize = 60.sp)
                 }
 
 
@@ -192,6 +221,8 @@ Log.d("", "Enable Hira")
         WrongDialog(
             onWrongDismiss = {
                 questionviewModel.onWrongDialogDismissed()
+                questionviewModel.setWrongQuestion(questions.id)
+                Log.d("View - ShowWrongDiaolog", "RetriveWrongQuestion")
                 questionviewModel.loadNewQuestion()
             },
             explanation = questions.wrong

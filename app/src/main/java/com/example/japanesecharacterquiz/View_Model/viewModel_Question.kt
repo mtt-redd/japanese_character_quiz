@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlin.Boolean
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
@@ -32,6 +33,8 @@ class viewModel_question @Inject constructor(private val questionRep: questionRe
     : ViewModel() {
 
 
+    private val _wrongcheck = MutableStateFlow(false)
+    val wrongcheck : StateFlow<Boolean> = _wrongcheck.asStateFlow()
 
     private val _showDialog = MutableStateFlow(false)
     private val _showWrongDialog = MutableStateFlow(false)
@@ -41,7 +44,7 @@ class viewModel_question @Inject constructor(private val questionRep: questionRe
     val showWrongDialog: StateFlow<Boolean> = _showWrongDialog.asStateFlow()
     val showHintDialog: StateFlow<Boolean> = _showHintDialog.asStateFlow()
 
-
+    var counter = 0
 
 
     //Kotlin doesn't allow null values. So this is a default answer is case
@@ -122,6 +125,14 @@ val defaultquestion = question(0, "Loading",
 
     }
 
+    fun setWrongQuestion(id : Int){
+
+        questionRep.setWrongQuestion(id)
+
+        Log.d("ViewModel - SetWrongQuestion", id.toString())
+
+    }
+
     fun openDialog() {
         _showDialog.value = true
     }
@@ -148,7 +159,41 @@ val defaultquestion = question(0, "Loading",
 
     fun loadNewQuestion(){
 
-         questions = questionRep.
+        var wronganswer = questionRep.prevWrong
+
+        Log.d("ViewModel - Load New Question", questionRep.prevWrong.toString())
+
+        if (wronganswer != -1){
+
+            if (counter >= 3){
+
+                loadWrongQuestionNext(wronganswer)
+
+                counter = 0
+                wronganswer = -1
+                questionRep.setWrongQuestion(-1)
+                _wrongcheck.value = true
+
+                 }
+            else {
+
+            counter++
+
+            Log.d("ViewModel - Load New Question", "counter up")
+            Log.d("ViewModel - Load New Question - Counter", counter.toString())
+
+            loadRandomQuestionNext()}
+        }
+
+        else{
+
+        loadRandomQuestionNext()
+    }
+    }
+
+    fun loadRandomQuestionNext(){
+
+        questions = questionRep.
         getQuestions(getDifficulty()).map { questions ->
             questions.random() //sends a random question instead of a specific one
         }
@@ -158,8 +203,28 @@ val defaultquestion = question(0, "Loading",
                 WhileSubscribed(5000),
                 initialValue = defaultquestion
             )
+        _wrongcheck.value = false
+
     }
 
+    fun loadWrongQuestionNext(wronganswer : Int){
+
+        questions = questionRep.
+        retriveWrongQuestion(wronganswer).map { questions ->
+            questions.random()
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.
+                WhileSubscribed(5000),
+                initialValue = defaultquestion
+            )
+
+
+
+        Log.d("ViewModel - Load New Question", "Loading Wrong")
+
+    }
 
 
 

@@ -20,6 +20,9 @@ interface questionDao {
     @Query("SELECT * FROM QuestionTable WHERE difficulty = :diff")
     fun retriveQuestion(diff: Int) : Flow<List<question>>
 
+    @Query("SELECT * FROM QuestionTable WHERE id = :id")
+    fun retriveWrongQuestion(id: Int) : Flow<List<question>>
+
 
 
 }

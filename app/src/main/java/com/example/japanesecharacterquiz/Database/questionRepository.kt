@@ -23,8 +23,15 @@ class questionRepository @Inject constructor(private val questionDao: questionDa
 
     var selectAnswer = 1
 
+    var prevWrong = -1
+
     fun getQuestions(diff : Int): Flow<List<question>>{
         return questionDao.retriveQuestion(diff)
+    }
+
+    fun retriveWrongQuestion(id : Int) : Flow<List<question>>{
+
+        return questionDao.retriveWrongQuestion(id)
     }
 
     fun enableHira(){
@@ -62,6 +69,25 @@ class questionRepository @Inject constructor(private val questionDao: questionDa
         selectAnswer = select + 1 //to compensate for index
 
     }
+
+    fun setWrongQuestion (id : Int){
+
+        prevWrong = id
+
+        Log.d("Rep - SetWrongQuestion", id.toString())
+
+    }
+
+    fun getWrongQuestion () : Int{
+
+        return prevWrong
+
+    }
+
+
+
+
+
 
 
 }
