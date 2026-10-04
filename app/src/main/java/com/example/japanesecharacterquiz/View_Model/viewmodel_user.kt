@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -43,6 +44,8 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
             started = SharingStarted.WhileSubscribed(5000), // 5s timeout standard for Compose/Lifecycle
             initialValue = 0
         )
+
+
 
     //Handles delete dialogue warning
     private val _showDialog = MutableStateFlow(false)
@@ -111,26 +114,33 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
 
 
     fun getusername(): String {
-        return userRep.getusername()
+
+        if (userRep.getusername().isNotEmpty()){
+            Log.d("Viewmodel Test", "NotEmpty")
+            return userRep.getusername()
+        }
+        Log.d("Viewmodel Test", "Empty")
+        return ""
 
     }
 
 
-
-    fun deleteuser(){
+    fun deleteuser() {
 
         viewModelScope.launch {
-        userRep.deleteUser()
-            _navigationEvent.send(Unit)}
+            userRep.deleteUser()
+            _navigationEvent.send(Unit)
+        }
         Log.d("viewModel", "Deleting user :(")
 
     }
 
-    fun updatescore(pointReward : Int, score : Int){
+    fun updatescore(pointReward: Int, score: Int) {
         viewModelScope.launch {
-        userRep.updateScore(pointReward, score)
-            Log.d("Corutine","This is happening")}
-        Log.d("Viewmodel","This is happening")
+            userRep.updateScore(pointReward, score)
+            Log.d("Corutine", "This is happening")
+        }
+        Log.d("Viewmodel", "This is happening")
     }
 
     //Dialogue confirmation for deleting the account
@@ -148,6 +158,18 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
         _showDialog.value = false
         deleteuser()
     }
+
+
+    //only for tests
+    fun addTestUser() {
+
+        checkuser("TestUser")
+    }
+
+
+
+
+
 }
 
 

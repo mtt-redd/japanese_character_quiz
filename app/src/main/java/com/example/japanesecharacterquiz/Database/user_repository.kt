@@ -28,10 +28,15 @@ class user_repository @Inject constructor(private val userDao: user_dao) {
     }
 
     suspend fun deleteUser () {
+
+        val savename = user
+        user = emptyList()
+
         withContext(Dispatchers.IO) {
-            userDao.deleteUser(user.first().username)
+            userDao.deleteUser(savename.first().username)}
+
         }
-    }
+
 
 //Retrieve user from the Dao
     suspend fun getUser(name: String) : List<user> {
@@ -75,4 +80,9 @@ Log.d("User Repository", "Change Score")
         userDao.updateScore(score + pointAward, getusername())
         Log.d("Corutine","This is happening")
     }
+
+
 }
+
+
+

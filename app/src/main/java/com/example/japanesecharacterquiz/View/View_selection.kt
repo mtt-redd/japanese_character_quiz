@@ -38,6 +38,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.japanesecharacterquiz.View_Model.viewModel_question
@@ -56,7 +57,7 @@ fun Selection(viewModel: viewmodel_user = hiltViewModel(),
     //context to load the database
     //get values from user_repository
     val username = viewModel.getusername()
-    val score by viewModel.score.collectAsStateWithLifecycle()
+    val score by viewModel.score.collectAsStateWithLifecycle() //Score uses a state to be updated
     //get values from input
     var checked by remember { mutableStateOf(true) }
 
@@ -80,7 +81,8 @@ fun Selection(viewModel: viewmodel_user = hiltViewModel(),
 //block changing orientation
     LaunchedEffect(configuration) {
         val activity = context ?: return@LaunchedEffect
-        val isCompact = configuration.screenWidthDp < 600 || configuration.screenHeightDp < 600
+        val isCompact = configuration.screenWidthDp < 600 ||
+                configuration.screenHeightDp < 600
         activity.requestedOrientation = if (isCompact) {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else {
@@ -119,7 +121,9 @@ Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
                     checked = checked,
                     onCheckedChange = {
                         checked = it
-                    },)
+                    },
+                    //TestTag for tests
+                    modifier = Modifier.testTag("Hiragana"))
 
             }
 

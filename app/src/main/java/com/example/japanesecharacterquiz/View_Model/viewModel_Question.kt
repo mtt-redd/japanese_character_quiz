@@ -74,6 +74,7 @@ val defaultquestion = question(0, "Loading",
         questionRep.disableHira()
     }
 
+
     fun setdifficulty(diff: String){
 
 
@@ -127,11 +128,13 @@ val defaultquestion = question(0, "Loading",
 
     fun setWrongQuestion(id : Int){
 
+        //Check if a question is already present
+        if (questionRep.getWrongQuestion() == -1){
         questionRep.setWrongQuestion(id)
 
         Log.d("ViewModel - SetWrongQuestion", id.toString())
 
-    }
+    }}
 
     fun openDialog() {
         _showDialog.value = true
@@ -223,6 +226,12 @@ val defaultquestion = question(0, "Loading",
 
 
         Log.d("ViewModel - Load New Question", "Loading Wrong")
+
+    }
+
+    fun testGetWrongQuestion() : Int{
+
+        return questionRep.prevWrong
 
     }
 
