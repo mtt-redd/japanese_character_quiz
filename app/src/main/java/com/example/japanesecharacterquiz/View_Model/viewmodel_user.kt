@@ -138,9 +138,9 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
     fun updatescore(pointReward: Int, score: Int) {
         viewModelScope.launch {
             userRep.updateScore(pointReward, score)
-            Log.d("Corutine", "This is happening")
+            Log.d("Corutine User_view", "Score is Getting updated")
         }
-        Log.d("Viewmodel", "This is happening")
+        Log.d("Viewmodel", "Score is Getting updated 2")
     }
 
     //Dialogue confirmation for deleting the account

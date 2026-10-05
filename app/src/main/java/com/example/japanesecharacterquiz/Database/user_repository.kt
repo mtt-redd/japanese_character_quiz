@@ -78,7 +78,7 @@ class user_repository @Inject constructor(private val userDao: user_dao) {
 
 Log.d("User Repository", "Change Score")
         userDao.updateScore(score + pointAward, getusername())
-        Log.d("Corutine","This is happening")
+        Log.d("Corutine","Score is Getting updated 3")
     }
 
 

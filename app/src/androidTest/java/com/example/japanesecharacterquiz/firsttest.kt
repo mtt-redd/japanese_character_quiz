@@ -9,13 +9,17 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.test.espresso.Espresso
+import com.example.japanesecharacterquiz.Database.user
 import com.example.japanesecharacterquiz.View.Greeting
 import com.example.japanesecharacterquiz.View.Question
 import com.example.japanesecharacterquiz.View.Selection
@@ -72,7 +76,7 @@ class firstest {
     //verify if the name and score are added
     @Test
     fun verifyNameAndScoreAreAdded() {
-    //Retrive the viewmodel, so we can retrieve the same values the View uses
+        //Retrive the viewmodel, so we can retrieve the same values the View uses
         val viewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
 
         composeRule.setContent { Selection() }
@@ -90,7 +94,8 @@ class firstest {
         //Retrive the viewmodel, so we can retrieve the same values the View uses
         //Use both Viewmodels
         val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
-        val questionViewModel = ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
+        val questionViewModel =
+            ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
 
         composeRule.setContent { Question() }
 
@@ -110,14 +115,15 @@ class firstest {
             composeRule.onAllNodes(isSelectable()).fetchSemanticsNodes().isNotEmpty()
         }
 
-        assertNotEquals(previousQuestion,questionViewModel.questions.value.Kanji )
+        assertNotEquals(previousQuestion, questionViewModel.questions.value.Kanji)
     }
 
     @Test
-    fun checkQuestionDifficulty(){
+    fun checkQuestionDifficulty() {
 
         val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
-        val questionViewModel = ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
+        val questionViewModel =
+            ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
 
         composeRule.setContent { Selection() }
 
@@ -127,16 +133,17 @@ class firstest {
 
         val difficulty = questionViewModel.getDifficulty()
 
-        assertEquals(3, difficulty )
+        assertEquals(3, difficulty)
 
 
     }
 
     @Test
-    fun assertQuestionHira(){
+    fun assertQuestionHira() {
 
         val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
-        val questionViewModel = ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
+        val questionViewModel =
+            ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
 
         composeRule.setContent { Selection() }
 
@@ -146,16 +153,17 @@ class firstest {
 
         val typeOfScript = questionViewModel.getHira()
 
-        assertEquals(false, typeOfScript )
+        assertEquals(false, typeOfScript)
 
 
     }
 
     @Test
-    fun verifyUserIsAdded(){
+    fun verifyUserIsAdded() {
 
         val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
-        val questionViewModel = ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
+        val questionViewModel =
+            ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
 
         userViewModel.addTestUser()
 
@@ -195,10 +203,11 @@ class firstest {
     }
 
     @Test
-    fun verifyWrongAnswerisSaved(){
+    fun verifyWrongAnswerisSaved() {
 
         val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
-        val questionViewModel = ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
+        val questionViewModel =
+            ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
 
         composeRule.setContent { Question() }
 
@@ -211,7 +220,7 @@ class firstest {
         var questionid = questionViewModel.questions.value.id
 
         //if the correct answer is 1, we use index 2 instead to choose the incorrect question
-        if (questionViewModel.questions.value.correctanswer == 1){
+        if (questionViewModel.questions.value.correctanswer == 1) {
 
             index = 2
         }
@@ -226,6 +235,35 @@ class firstest {
 
 
     }
+
+    @Test
+    fun verifyCorrectAnswerIsSelected() {
+        val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]
+        val questionViewModel =
+            ViewModelProvider(composeRule.activity)[viewModel_question::class.java]
+
+        userViewModel.addTestUser()
+        composeRule.setContent {
+            Question()
+        }
+
+        // Wait until the composable has subscribed and a real (random) question was emitted.
+        // Read through the ViewModel each time, because `questions` is a var that can be reassigned.
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            questionViewModel.questions.value !== questionViewModel.defaultquestion
+        }
+        composeRule.waitForIdle()
+        val correctAnswerId = questionViewModel.questions.value.correctanswer
+
+        // Select the correct radio button -1 to compensate for array
+        composeRule.onAllNodes(isSelectable())[correctAnswerId - 1].performClick()
+
+        composeRule.onNodeWithText("Submit!").performClick()
+
+        composeRule.onNodeWithText("You got it right!").assertExists()
+
+    }
+
 
 
 }

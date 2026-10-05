@@ -6,23 +6,23 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="verifyUserIsDeleted()">
+      <SelectionState runConfigName="verifyScoreIncreasesAfterCorrectAnswer()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="assertQuestionHira()">
+      <SelectionState runConfigName="verifyScoreIncreases()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="verifyUserIsAdded()">
+      <SelectionState runConfigName="verifyCorrectAnswerIsSelected()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="verifyWrongAnswerisSaved()">
+      <SelectionState runConfigName="firstest">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="verifyScoreIsUpdate()">
+      <SelectionState runConfigName="submitButton_isEnabled_whenUsernameIsAdded()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
