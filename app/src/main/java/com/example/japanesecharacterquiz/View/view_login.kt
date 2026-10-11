@@ -45,9 +45,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
         }
     }
 
+//Used to register the configuration and the context
     val configuration = LocalConfiguration.current
     val context = LocalActivity.current
 
+    //Avoid changing the screen when rotating the device.
     LaunchedEffect(configuration) {
         val activity = context ?: return@LaunchedEffect
         // Determine if screen is compact (phone-sized) in either width or height
@@ -58,7 +60,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
             ActivityInfo.SCREEN_ORIENTATION_FULL_USER
         }
     }
-
+//Simple box which defines the Aspect Ratio.
     Box(Modifier.fillMaxSize()
         .aspectRatio(9f / 16f),
     ){
@@ -68,7 +70,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
             contentDescription = "Japanese Background",
             contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
-                .blur(1.5.dp)
+                .blur(1.5.dp) //Image is slightly blurred
         )
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -89,29 +91,33 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
                 .background(Color(255, 192, 203))
                 .fillMaxWidth(0.90f),
             ){
+                //Text field to add the user
                 Column(Modifier.padding(30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "Welcome, please add your username here!",
 
                         )
-                    val inputuser = rememberTextFieldState()
-                    val inputtext = inputuser.text.toString()
-                    val inputempty = !inputtext.isBlank()
+                    //Variables hold the input from the user
+                    val inputUser = rememberTextFieldState()
+                    val inputText = inputUser.text.toString()
+                    //Return False is InputText is empty.
+                    val inputEmpty = !inputText.isBlank()
                     TextField(
-                        state = inputuser,
+                        state = inputUser,
                         placeholder = { Text("User") },
+                        //Username label, also used by the UnitTest
                         label = { Text("Username") },
                         modifier = Modifier.padding(10.dp)
                     )
                     Button(
                         onClick = {
-                            viewModel.checkuser(inputtext)
+                            viewModel.checkuser(inputText)
                         },
 
                         Modifier.padding(5.dp)
                             .fillMaxWidth(0.75f),
-                        enabled = inputempty, //checks if user filled the textfield
+                        enabled = inputEmpty, //Checks if user filled the textfield
                     ) {
                         Text("Submit")
 

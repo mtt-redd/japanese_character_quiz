@@ -28,8 +28,7 @@ import javax.inject.Singleton
 class viewmodel_user @Inject constructor(private val userRep: user_repository)
     : ViewModel() {
 
-    /* init{
-        val db = user_database.getDatabase(application)} */
+ //ViewModel to communicate with the user database. Used by all views.
 
     private val _navigationEvent = Channel<Unit>()
     val navigationEvent = _navigationEvent.receiveAsFlow()
@@ -38,10 +37,13 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
 
     var username = ""
 
+
+//Retrive the score as a flow
     val score: StateFlow<Int> = userRep.getscore(userRep.getusername())
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // 5s timeout standard for Compose/Lifecycle
+            // Wait for 5 seconds
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = 0
         )
 
@@ -51,7 +53,7 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
 
-    //check if a user exists or create a new user.
+    //Check if a user exists or create a new user.
     fun checkuser(name: String) {
 
         Log.d("", name)
@@ -82,10 +84,11 @@ class viewmodel_user @Inject constructor(private val userRep: user_repository)
 
 
                 } else {
-                    Log.d("", "User Found!")
-                    // add user to repository values
+                    Log.d("ViewModel", "User Found!")
+                    // Add user to repository so it can be reused.
                     userRep.setuser(userList)
-                    Log.d("", "User has been set")
+                    Log.d("ViewModel", "User has been set")
+                    //Switch to the View_Selection
                     _navigationEvent.send(Unit)
 
                 }

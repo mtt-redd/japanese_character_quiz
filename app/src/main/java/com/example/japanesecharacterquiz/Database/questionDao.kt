@@ -17,9 +17,11 @@ interface questionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(question: question)
 
+    //Retrive all the questions based on selected difficulties
     @Query("SELECT * FROM QuestionTable WHERE difficulty = :diff")
     fun retriveQuestion(diff: Int) : Flow<List<question>>
 
+    //Retrive one specific question.
     @Query("SELECT * FROM QuestionTable WHERE id = :id")
     fun retriveWrongQuestion(id: Int) : Flow<List<question>>
 

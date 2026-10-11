@@ -89,6 +89,7 @@ class firstest {
         composeRule.onNodeWithText("Score : $testScore").assertIsDisplayed()
     }
 
+    //Verify if a new Question is loaded
     @Test
     fun verifyNewQuestionIsLoaded() {
         //Retrive the viewmodel, so we can retrieve the same values the View uses
@@ -118,6 +119,7 @@ class firstest {
         assertNotEquals(previousQuestion, questionViewModel.questions.value.Kanji)
     }
 
+    //Check if the question difficulty is saved
     @Test
     fun checkQuestionDifficulty() {
 
@@ -137,6 +139,8 @@ class firstest {
 
 
     }
+
+    //Check if Hiragana answers are loaded
 
     @Test
     fun assertQuestionHira() {
@@ -158,6 +162,7 @@ class firstest {
 
     }
 
+    //Verify if a user is added in the repository
     @Test
     fun verifyUserIsAdded() {
 
@@ -175,6 +180,7 @@ class firstest {
 
     }
 
+    //Verify if a userisDeleted
     @Test
     fun verifyUserIsDeleted() {
 
@@ -202,6 +208,7 @@ class firstest {
 
     }
 
+    //Verify if the id of a question is saved when customer gets a question wrong.
     @Test
     fun verifyWrongAnswerisSaved() {
 
@@ -236,6 +243,7 @@ class firstest {
 
     }
 
+    //Verify if the correct Answer is marked correctly
     @Test
     fun verifyCorrectAnswerIsSelected() {
         val userViewModel = ViewModelProvider(composeRule.activity)[viewmodel_user::class.java]

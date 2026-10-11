@@ -11,17 +11,22 @@ fun MainNavigation() {
 
     NavHost(
         navController = navController,
+        // Indicates the first screen user will see when
+        //MainActivity starts. It's the login screen
         startDestination = "login"
     ) {
+        //Allow to switch from Login to Selection. Used when a user is created or found.
         composable("login") {
             Greeting(onNavigateToSelection = {
                 navController.navigate("selection") {
+                    //Used to remove Login from the backstack
                     popUpTo("login") { inclusive = true }
                 }
             })
         }
 
-        // Combine both callbacks into a single "selection" destination
+//Allow to switch from Selection to Login. Used when login off or an account is deleted.
+
         composable("selection") {
             Selection(
                 onNavigateToLogin = {
@@ -29,6 +34,7 @@ fun MainNavigation() {
                         popUpTo("selection") { inclusive = true }
                     }
                 },
+                //Allow from Selection to Quiz. This is main quiz part.
                 onNavigateToQuiz = {
                     navController.navigate("quiz") {
                         popUpTo("selection") { inclusive = true }
@@ -36,8 +42,7 @@ fun MainNavigation() {
                 }
             )
         }
-
-        // Add the missing "quiz" route destination
+        //Allow to switch from Quiz to Selection. Used when the user exit the quiz
         composable("quiz") {
             Question(
                 onNavigateToSelection = {

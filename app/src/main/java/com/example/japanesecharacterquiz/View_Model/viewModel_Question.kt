@@ -106,14 +106,9 @@ val defaultquestion = question(0, "Loading",
 
         val getcorrectanswer = questions.value.correctanswer
 
-        Log.d("Viewmodel", questionRep.selectAnswer.toString())
-        Log.d("Viewmodel", getcorrectanswer.toString())
-
         if (questionRep.selectAnswer == getcorrectanswer) {
 
             setSelectedAnswer(0)
-
-            Log.d("Viewmodel", "You got it right!")
 
             openDialog()
 
@@ -160,11 +155,14 @@ val defaultquestion = question(0, "Loading",
         _showHintDialog.value = false
     }
 
+    //Load a new question. If a wrong question is saved, we check if the counter is above
+    //above 3, and use the saved wrong question. Otherswise a random question is loaded.
     fun loadNewQuestion(){
 
         var wronganswer = questionRep.prevWrong
 
-        Log.d("ViewModel - Load New Question", questionRep.prevWrong.toString())
+        Log.d("ViewModel - Load New Question",
+            questionRep.prevWrong.toString())
 
         if (wronganswer != -1){
 
@@ -181,9 +179,6 @@ val defaultquestion = question(0, "Loading",
             else {
 
             counter++
-
-            Log.d("ViewModel - Load New Question", "counter up")
-            Log.d("ViewModel - Load New Question - Counter", counter.toString())
 
             loadRandomQuestionNext()}
         }
@@ -210,6 +205,7 @@ val defaultquestion = question(0, "Loading",
 
     }
 
+    //Load one question who was gotten wrong before.
     fun loadWrongQuestionNext(wronganswer : Int){
 
         questions = questionRep.

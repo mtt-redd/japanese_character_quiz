@@ -11,17 +11,17 @@ import java.util.Date
 class question (
     @PrimaryKey(autoGenerate = true,)
     val id: Int,
-    val Kanji: String,
-    val answer1: String,
+    val Kanji: String, //The Kanji that will be asked.
+    val answer1: String, //First answer in English
     val answer2: String,
     val answer3: String,
     val answer4: String,
-    val answer1Hiragana: String,
+    val answer1Hiragana: String, //First answer in Hiragana
     val answer2Hiragana: String,
     val answer3Hiragana: String,
     val answer4Hiragana: String,
-    val correctanswer: Int,
-    val hint: String,
-    val wrong: String,
-    val difficulty: Int
+    val correctanswer: Int, //Id of the correct answer
+    val hint: String, //Hint displayed when asked.
+    val wrong: String, //Text that appears when the question was answered incorrectly.
+    val difficulty: Int //Difficulty of the Kanji
 )

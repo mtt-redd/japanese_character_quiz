@@ -55,14 +55,14 @@ fun Selection(viewModel: viewmodel_user = hiltViewModel(),
               ) {
 
     //context to load the database
-    //get values from user_repository
+    //Get values from user_repository to use in the top bar.
     val username = viewModel.getusername()
-    val score by viewModel.score.collectAsStateWithLifecycle() //Score uses a state to be updated
-    //get values from input
+    //Score uses a state to be updated
+    val score by viewModel.score.collectAsStateWithLifecycle()
+    //Get values from the Switch
     var checked by remember { mutableStateOf(true) }
 
-    Log.d("", "Are you online?")
-
+    //Difficulties options used in the radio buttons
     val radioOptions = listOf("Easy", "Normal", "Hard")
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
 
@@ -74,11 +74,12 @@ fun Selection(viewModel: viewmodel_user = hiltViewModel(),
         }
     }
 
+//Block changing orientation
     val configuration = LocalConfiguration.current
     val context = LocalActivity.current
 
 
-//block changing orientation
+
     LaunchedEffect(configuration) {
         val activity = context ?: return@LaunchedEffect
         val isCompact = configuration.screenWidthDp < 600 ||
@@ -90,6 +91,7 @@ fun Selection(viewModel: viewmodel_user = hiltViewModel(),
         }
     }
 
+    //Top bar that shows the score and the username
 Column(horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(26.dp),
     modifier = Modifier.background(Color(255, 190,
@@ -107,10 +109,12 @@ modifier = Modifier.background(Color(255, 139, 139, 255))
         Text("Score : $score", textAlign = TextAlign.Right)
     }
 
+    //Button to start the quiz. Switch to Question_View
 Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
 
     Column(modifier = Modifier.padding(top = 26.dp)){
 
+        //Switch to select Hiragana or English questions
         Box(modifier = Modifier.border(1.dp, Color.Black,
             RectangleShape)) {
             Row(Modifier.fillMaxWidth(),
@@ -130,7 +134,7 @@ Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
 
         }}
 
-
+//Radio button to select difficulty
             Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
                 Text(text = "Select a difficulty")
                 radioOptions.forEach { text ->
@@ -158,9 +162,11 @@ Button(onClick ={ onNavigateToQuiz()}, ) {Text("START!") }
                 )
 
             }}
+                //Saves the selected difficulty in the Repository
 questionviewModel.setdifficulty(selectedOption)
 
         }
+    //Enables Hira answers or not. The Boolean value is saved in the repository
 
     if (checked == true){
         questionviewModel.enableHira()
@@ -168,13 +174,13 @@ questionviewModel.setdifficulty(selectedOption)
     else {questionviewModel.disableHira()}
 
 
-
+//Log out button. Goes back to the Login screen.
 
     Button(colors = ButtonDefaults.outlinedButtonColors
         (containerColor = Color.Red),
         onClick ={ onNavigateToLogin()}, ) {Text("Log Out") }
 
-
+//Using a text button to delete the account. As it makes it less visible
     TextButton(
         onClick = {viewModel.onOpenDialogClicked()},
         colors = ButtonDefaults.textButtonColors(
@@ -184,7 +190,7 @@ questionviewModel.setdifficulty(selectedOption)
     ) {
         Text("Delete Account")
     }
-
+//Show a dialog before deleting the user
     if (showDialog) {
         DeleteDialog(
             onDismiss = viewModel::onDialogDismissed,
@@ -199,6 +205,7 @@ questionviewModel.setdifficulty(selectedOption)
 
 }
 
+//Dialog to confirm if customer wants to delete their user
 @Composable
 fun DeleteDialog(
     onDismiss: () -> Unit,

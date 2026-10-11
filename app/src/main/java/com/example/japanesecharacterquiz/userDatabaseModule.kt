@@ -14,9 +14,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object userDatabasemodule {
 
+    //Module primary reason is to make sure only one
+// instance of the database and Dao is created.
+    //Hilt allows to create the database object only once
+    //via the annotation @Singleton
+
     @Provides
     @Singleton
-    fun provideUserDatabase(@ApplicationContext context: Context): user_database {
+    fun provideUserDatabase(@ApplicationContext context: Context):
+            user_database {
         return user_database.getDatabase(context)
     }
 

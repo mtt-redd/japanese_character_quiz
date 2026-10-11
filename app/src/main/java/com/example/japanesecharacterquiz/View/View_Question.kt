@@ -58,7 +58,7 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
              questionviewModel: viewModel_question = hiltViewModel(),
              onNavigateToSelection: () -> Unit = {}) {
 
-    //get values from user_repository
+    //Get values from user_repository. Score and Username are saved on the top.
     val username = userviewModel.getusername()
 
     val score by userviewModel.score.collectAsStateWithLifecycle()
@@ -66,15 +66,15 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
 
 
 
-
+//Object question which contains all info about a random question.
     val questions by questionviewModel.questions.collectAsStateWithLifecycle()
 
-
+//Kanji to guess the meaning
     val kanji = questions.Kanji
 
 
 
-
+//Answers that customer can select
     var answers = listOf(
         questions.answer1,
         questions.answer2,
@@ -82,6 +82,7 @@ fun Question(userviewModel: viewmodel_user = hiltViewModel(),
         questions.answer4
     )
 
+    //Change the answers to Hiragana
 if (questionviewModel.getHira() == true){
 Log.d("", "Enable Hira")
         answers = listOf(
@@ -91,9 +92,13 @@ Log.d("", "Enable Hira")
             questions.answer4Hiragana,)
 
     }
+
+    //Variable for Radio button
     val (selectedOption, onOptionSelected) =
         remember(questions)
         { mutableStateOf(answers[0]) }
+
+    //Boolean variables that handle dialogue opening and closing
 
     val wrongcheck by questionviewModel.wrongcheck
         .collectAsStateWithLifecycle()
@@ -107,6 +112,7 @@ Log.d("", "Enable Hira")
     val showHintDialog by questionviewModel.showHintDialog
         .collectAsStateWithLifecycle()
 
+    //Blocks turning the screen.
     val configuration = LocalConfiguration.current
     val context = LocalActivity.current
 
@@ -120,7 +126,7 @@ Log.d("", "Enable Hira")
             ActivityInfo.SCREEN_ORIENTATION_FULL_USER
         }
     }
-
+//Top Bar
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(Color(255, 190,
             190, 255))
@@ -138,6 +144,7 @@ Log.d("", "Enable Hira")
             Text("Score : $score ", textAlign = TextAlign.Right)
         }
 
+        //Hint text button. Above the question
         TextButton(
             onClick = {questionviewModel.openHintDialog()},
             colors = ButtonDefaults.textButtonColors(
@@ -148,12 +155,14 @@ Log.d("", "Enable Hira")
             Text("Hint")
         }
 
+        //Showed only when loading a previous wrong question
         if (wrongcheck) {
             Text(
                 text = "You got this question wrong before!",
                 )
         }
 
+        //Show the Kanji inside a Box
         Box(modifier = Modifier.padding(top = 10.dp)
             .background
             (Color(255, 255, 255, 255))
@@ -162,7 +171,7 @@ Log.d("", "Enable Hira")
                     Text(text = kanji, fontSize = 60.sp)
                 }
 
-
+//Load the radio button
         Column (verticalArrangement = Arrangement.spacedBy(5.dp)){
             Text(text = "Choose the correct answer:")
             answers.forEachIndexed { index, text ->
@@ -197,17 +206,18 @@ Log.d("", "Enable Hira")
 
 
         }
-
+//Submit the question
         Button(colors = ButtonDefaults.outlinedButtonColors
             (containerColor = Color.Blue,),
             onClick ={ questionviewModel.verifyanswer()}, ) {Text("Submit!") }
 
-
+//Exit the question. Go back to Selection
     Button(colors = ButtonDefaults.outlinedButtonColors
             (containerColor = Color.Red,),
             onClick ={ onNavigateToSelection()}, ) {Text("Exit the Quiz") }
     }
 
+    //Show the correct answer dialog
     if (showDialog) {
         ConfirmationDialog(
             onDismiss = { questionviewModel.onDialogDismissed()
@@ -217,6 +227,7 @@ Log.d("", "Enable Hira")
         )
     }
 
+    //Show the wrong answer dialog
     if (showWrongDialog){
         WrongDialog(
             onWrongDismiss = {
@@ -229,6 +240,7 @@ Log.d("", "Enable Hira")
         )
     }
 
+    //Show the Hint via a dialogue
     if (showHintDialog){
         HintDialog(
             onHintDismiss = {
@@ -241,6 +253,7 @@ Log.d("", "Enable Hira")
 
     }
 
+//Dialog to confirm the correct answer. Score is updated when pressing ok.
 @Composable
 fun ConfirmationDialog(
     onDismiss: () -> Unit,
@@ -256,6 +269,8 @@ fun ConfirmationDialog(
         }
     )
 }
+
+//Wrong answer dialogue
 
 @Composable
 fun WrongDialog(
@@ -274,6 +289,7 @@ fun WrongDialog(
     )
 }
 
+//Show the hint dialogue
 @Composable
 fun HintDialog(
     onHintDismiss: () -> Unit,
